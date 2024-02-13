@@ -4,122 +4,123 @@
     <title>Wheel of fortune</title>
     <meta charset="UTF-8" />
     <link rel="stylesheet" type="text/css" href="style.css" />
+    <style>
+      .display {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 200px; /* Adjust height as needed */
+      }
+      .display div {
+        margin-bottom: 10px; /* Adjust margin as needed */
+      }
+    </style>
   </head>
   <body>
-    
-     <div class="imgside">
-   
-      <div class="item">
-        <img src="/frog.png" alt="">
-        <p>frog</p>
-      </div>
-      <div class="item">
-        <img src="/snail.png" alt="">
-        <p>snail</p>
-      </div>
-      <div class="item">
-        <img src="/fish.png" alt="">
-        <p>fish</p>
-      </div>
-      <div class="item">
-        <img src="/bug.png" alt="">
-        <p>bug</p>
-      </div>
-      <div class="item">
-        <img src="/chupapa.png" alt="">
-        <p>koala</p>
-      </div>
-      <div class="item">
-        <img src="/unicorn.png" alt="">
-        <p>unicorn</p>
-      </div>
-      <div class="item">
-        <img src="/hindu.png" alt="">
-        <p>dragón</p>
-      </div>
-      <div class="item">
-        <img src="/penguin.png" alt="">
-        <p>Snow-Man</p>
+    <div class="imgside">
+      <p>frog</p>
+      <p>snail</p>
+      <p>fish</p>
+      <p>bug</p>
+      <p>koala</p>
+      <p>unicorn</p>
+      <p>dragon</p>
+      <p>Snow-Man</p>
+    </div>
+
+    <div id="app">
+      <img class="marker" src="marker.png" />
+      <img class="wheel" src="wheel.png" />
+      <img class="button" src="button.png" />
+      <div class="display">
+        <div class="score-display">
+          Current Score: <span id="currentScore">0</span>
+        </div>
+        <div class="total-score-display">
+          Total Score: <span id="totalScore">0</span>
+        </div>
+        <div class="spin-count">Spin: <span id="spinCount">0</span>/4</div>
       </div>
     </div>
-    
-    
-      <div id="app">
-        <img class="marker" src="marker.png" />
-        <img class="wheel" src="wheel.png" />
-        <img class="button" src="button.png" />
-        <div class="display">-</div>
-        <div class="score">Score: <span id="score">0</span></div>
-      
-   
-  </td>
-  </tr>
-  </table>
+
     <script src="script.js"></script>
     <script>
       (function () {
-    const wheel = document.querySelector(".wheel");
-    const startButton = document.querySelector(".button");
-    const display = document.querySelector(".display");
-    const scoreDisplay = document.getElementById("score");
+        const wheel = document.querySelector(".wheel");
+        const startButton = document.querySelector(".button");
+        const currentScoreDisplay = document.getElementById("currentScore");
+        const totalScoreDisplay = document.getElementById("totalScore");
+        const spinCountDisplay = document.getElementById("spinCount");
 
-    let deg = 0;
-    let zoneSize = 45; // deg
-    let score = 0;
-    let spinCount = 0;
+        let deg = 0;
+        let zoneSize = 45; // deg
+        let currentScore = 0;
+        let totalScore = 0;
+        let spinCount = 0;
+        let spinning = false; // Flag to prevent multiple spins
 
-    // Counter clockwise
-    const symbolSegments = {
-        1: "frog",
-        2: "snail",
-        3: "fish",
-        4: "bug",
-        5: "koala",
-        6: "unicorn",
-        7: "dragon",
-        8: "Snow-Man",
-    };
+        // Counter clockwise
+        const symbolSegments = {
+          1: "frog",
+          2: "snail",
+          3: "fish",
+          4: "bug",
+          5: "koala",
+          6: "unicorn",
+          7: "dragon",
+          8: "Snow-Man",
+        };
 
-    const handleWin = (actualDeg, guess) => {
-        const winningSymbolNr = Math.ceil(actualDeg / zoneSize);
-        const winningSymbol = symbolSegments[winningSymbolNr];
+        const handleWin = (actualDeg, guess) => {
+          if (!spinning) {
+            spinning = true; // Set spinning flag to true
 
-        if (guess && guess.toLowerCase() === winningSymbol.toLowerCase()) {
-            score++;
-            display.innerHTML = "Correct!";
-        } else {
-            score = Math.max(0, score - 1); // Decrement score by 1, but ensure it never goes below 0
-            display.innerHTML = "Incorrect!";
-        }
+            const winningSymbolNr = Math.ceil(actualDeg / zoneSize);
+            const winningSymbol = symbolSegments[winningSymbolNr];
 
-        scoreDisplay.textContent = score;
-        spinCount++;
+            if (guess && guess.toLowerCase() === winningSymbol.toLowerCase()) {
+              ++currentScore;
+              currentScoreDisplay.textContent = currentScore;
+              alert("Congratulations! Your guess is correct.");
 
-        if (spinCount === 20) {
-            display.innerHTML = "Game Over! Your final score is: " + score;
-            startButton.style.display = "none";
-        }
-    };
+              // Update total score
+              totalScore += currentScore;
+              totalScoreDisplay.textContent = totalScore;
+            } else {
+              currentScore = Math.max(0, currentScore - 1); // Decrement score by 1, but ensure it never goes below 0
+              currentScoreDisplay.textContent = currentScore;
+              alert("Your guess is incorrect.");
+            }
 
-    const startSpin = (guess) => {
-        // Reset display
-        display.innerHTML = "-";
-        // Disable button during spin
-        startButton.style.pointerEvents = "none";
-        // Calculate a new rotation between 5000 and 10 000
-        deg = Math.floor(5000 + Math.random() * 5000);
-        // Set the transition on the wheel
-        wheel.style.transition = "all 10s ease-out";
-        // Rotate the wheel
-        wheel.style.transform = `rotate(${deg}deg)`;
-        // Apply the blur
-        wheel.classList.add("blur");
+            // Update spin count
+            ++spinCount;
 
-        wheel.addEventListener("transitionend", () => {
+            if (spinCount == 4) {
+              startButton.style.display = "none";
+              document.querySelector(".spin-count").textContent = "Game Over";
+            } else {
+              spinCountDisplay.textContent = spinCount;
+            }
+
+            spinning = false; // Reset spinning flag
+          }
+        };
+
+        const startSpin = (guess) => {
+          // Calculate a new rotation between 5000 and 10 000
+          deg = Math.floor(5000 + Math.random() * 5000);
+          // Set the transition on the wheel
+          wheel.style.transition = "all 10s ease-out";
+          // Rotate the wheel
+          wheel.style.transform = `rotate(${deg}deg)`;
+          // Apply the blur
+          wheel.classList.add("blur");
+          
+
+          wheel.addEventListener("transitionend", () => {
             // Remove blur
             wheel.classList.remove("blur");
-            // Enable button when spin is over
-            startButton.style.pointerEvents = "auto";
             // Need to set transition to none as we want to rotate instantly
             wheel.style.transition = "none";
             // Calculate degree on a 360 degree basis to get the "natural" real rotation
@@ -130,29 +131,28 @@
             wheel.style.transform = `rotate(${actualDeg}deg)`;
             // Calculate and display the winning symbol
             handleWin(actualDeg, guess);
-        });
-    };
+          });
+        };
 
-    startButton.addEventListener("click", () => {
-        const guess = prompt("Guess the symbol:");
-        if (guess) {
+        startButton.addEventListener("click", () => {
+          const guess = prompt("Guess the symbol:");
+          if (guess) {
             startSpin(guess);
-        }
-    });
+          }
+        });
 
-    // Listen for keyboard events
-    document.addEventListener("keydown", (event) => {
-        // Check if the Enter key is pressed
-        if (event.key === "Enter") {
+        // Listen for keyboard events
+        document.addEventListener("keydown", (event) => {
+          // Check if the Enter key is pressed
+          if (event.key === "Enter") {
             const guess = prompt("Guess the symbol:");
             if (guess) {
-                startSpin(guess);
+              startSpin(guess);
             }
-        }
-    });
-})();
-
+          }
+        });
+      })();
     </script>
-    </div>
   </body>
 </html>
+            
