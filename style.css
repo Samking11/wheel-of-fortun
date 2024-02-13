@@ -2,10 +2,13 @@
 
 /* Style for .imgside container */
 body{
-  background-image: url('/photo_2024-02-12_18-59-54.jpg')
+  background-color: burlywood;
 }
-.imgside {
-  display: flex; /* Use flexbox */
+.imgside{
+  display: grid; /* Use flexbox */
+  margin-right: 10px;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  
 }
 
 /* Style for each item */
@@ -22,9 +25,10 @@ body{
 }
 
 /* Style for paragraphs inside each item */
-.item p {
+ p {
   margin: 5px 0; /* Add some margin for spacing */
   text-align: center; /* Center text horizontally */
+  align-content: space-between;
 }
 
 #app {
@@ -40,12 +44,12 @@ body{
     justify-content: center;
     width: 200px;
     height: 50px;
-    border: 1px solid black;
-    border-radius: 20px; 
+    
     text-align: center;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 2rem;
     margin: 20px auto;
+    margin-top: 100px;
   }
   
   .marker {
@@ -88,4 +92,3 @@ body{
       filter: blur(0px);
     }
   }
-  
